@@ -8,12 +8,12 @@ import uk.co.harieo.StagePlay.scripts.StageActions;
 public class IntegerComponent extends StageComponent<Integer> {
 
 	@Override
-	protected Integer parseElement(JsonElement element) {
+	public Integer parseElement(JsonElement element) {
 		return element.getAsInt();
 	}
 
 	@Override
-	protected void addToJson(StageActions action, JsonObject object) {
+	public void addToJson(StageActions action, JsonObject object) {
 		object.addProperty(action.name(), getValue());
 	}
 }

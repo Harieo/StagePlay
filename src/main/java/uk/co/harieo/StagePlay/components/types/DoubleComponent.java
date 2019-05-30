@@ -8,12 +8,13 @@ import uk.co.harieo.StagePlay.scripts.StageActions;
 public class DoubleComponent extends StageComponent<Double> {
 
 	@Override
-	protected Double parseElement(JsonElement element) {
+	public Double parseElement(JsonElement element) {
 		return element.getAsDouble();
 	}
 
 	@Override
-	protected void addToJson(StageActions action, JsonObject object) {
+	public void addToJson(StageActions action, JsonObject object) {
 		object.addProperty(action.name(), getValue());
 	}
+
 }

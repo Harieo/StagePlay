@@ -8,12 +8,13 @@ import uk.co.harieo.StagePlay.scripts.StageActions;
 public class StringComponent extends StageComponent<String> {
 
 	@Override
-	protected String parseElement(JsonElement element) {
+	public String parseElement(JsonElement element) {
 		return element.getAsString();
 	}
 
 	@Override
-	protected void addToJson(StageActions action, JsonObject object) {
+	public void addToJson(StageActions action, JsonObject object) {
 		object.addProperty(action.name(), getValue());
 	}
+
 }

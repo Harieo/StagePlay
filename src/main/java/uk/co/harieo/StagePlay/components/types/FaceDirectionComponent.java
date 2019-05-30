@@ -9,13 +9,13 @@ import uk.co.harieo.StagePlay.scripts.StageActions;
 public class FaceDirectionComponent extends StageComponent<Facing> {
 
 	@Override
-	protected Facing parseElement(JsonElement element) {
+	public Facing parseElement(JsonElement element) {
 		String[] stringDirection = element.getAsString().split(":");
 		return new Facing(Float.parseFloat(stringDirection[0]), Float.parseFloat(stringDirection[1]));
 	}
 
 	@Override
-	protected void addToJson(StageActions action, JsonObject object) {
+	public void addToJson(StageActions action, JsonObject object) {
 		object.addProperty(action.name(), getValue().getYaw() + ":" + getValue().getPitch());
 	}
 

@@ -31,7 +31,7 @@ public abstract class StageComponent<V> {
 	 * @param element to be parsed
 	 * @return the deserialized value
 	 */
-	protected abstract V parseElement(JsonElement element);
+	public abstract V parseElement(JsonElement element);
 
 	/**
 	 * Adds this component to the given {@link JsonObject} with the corresponding action as the key
@@ -39,6 +39,6 @@ public abstract class StageComponent<V> {
 	 * @param action as the property key
 	 * @param object to add the component to
 	 */
-	protected abstract void addToJson(StageActions action, JsonObject object);
+	public abstract void addToJson(StageActions action, JsonObject object);
 
 }

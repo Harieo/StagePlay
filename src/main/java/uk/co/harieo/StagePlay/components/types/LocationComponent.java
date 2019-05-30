@@ -11,7 +11,7 @@ import uk.co.harieo.StagePlay.scripts.StageActions;
 public class LocationComponent extends StageComponent<Location> {
 
 	@Override
-	protected Location parseElement(JsonElement element) {
+	public Location parseElement(JsonElement element) {
 		String[] serializedLocation = element.getAsString().split(":");
 		return new Location(Bukkit.getWorld(serializedLocation[0]),
 				Double.parseDouble(serializedLocation[1]),
@@ -20,7 +20,7 @@ public class LocationComponent extends StageComponent<Location> {
 	}
 
 	@Override
-	protected void addToJson(StageActions action, JsonObject object) {
+	public void addToJson(StageActions action, JsonObject object) {
 		object.addProperty(action.name(),
 				getValue().getWorld().getName() + ":" + getValue().getX() + ":" + getValue().getY() + ":"
 						+ getValue().getZ());
