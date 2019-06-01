@@ -1,0 +1,5 @@
+main: uk.co.harieo.StagePlay.StagePlay
+version: 1.0.0-SNAPSHOT
+name: StagePlay
+author: Harieo
+depend: ['FurCore']

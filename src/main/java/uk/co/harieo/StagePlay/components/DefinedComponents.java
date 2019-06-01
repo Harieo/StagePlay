@@ -58,6 +58,13 @@ public enum DefinedComponents {
 	}
 
 	/**
+	 * @return whether the player's location can be used without manual input
+	 */
+	public boolean doesUseLocation() {
+		return componentClass == LocationComponent.class || componentClass == FaceDirectionComponent.class;
+	}
+
+	/**
 	 * Creates a new instance of the handling class for this component
 	 *
 	 * @param <T> representing which handling class is required

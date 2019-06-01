@@ -43,6 +43,11 @@ public class FaceDirectionComponent extends StageComponent<Facing> {
 		public void setYaw(float yaw) {
 			this.yaw = yaw;
 		}
+
+		@Override
+		public String toString() {
+			return "Yaw:" + yaw + ", Pitch:" + pitch;
+		}
 	}
 
 }
