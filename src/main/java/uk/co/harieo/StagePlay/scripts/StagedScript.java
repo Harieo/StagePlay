@@ -185,7 +185,9 @@ public class StagedScript {
 		}
 
 		mainJson.addProperty("name", scriptName); // Sets the script name as the static identifier
+		mainJson.addProperty("entityName", entityName);
 		mainJson.addProperty("entityType", entityType.name());
+		mainJson.addProperty("amountOfStages", amountOfStages); // Used on loading
 		mainJson.add("stages", mainStagesJson);
 
 		StagePlay plugin = StagePlay.getInstance();

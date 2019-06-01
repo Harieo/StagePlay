@@ -12,6 +12,9 @@ import java.util.Arrays;
 import uk.co.harieo.StagePlay.commands.ScriptCommand;
 import uk.co.harieo.StagePlay.commands.modules.StageActionModule;
 import uk.co.harieo.StagePlay.commands.modules.StageEntityModule;
+import uk.co.harieo.StagePlay.commands.subcommands.ScriptActionCommands;
+import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
+import uk.co.harieo.StagePlay.commands.subcommands.ScriptExecutionCommands;
 
 public class StagePlay extends JavaPlugin {
 
@@ -22,7 +25,7 @@ public class StagePlay extends JavaPlugin {
 		instance = this;
 
 		injectModules(new StageActionModule(), new StageEntityModule());
-		registerCommands(new ScriptCommand());
+		registerCommands(new ScriptCommand(), new ScriptActionCommands(), new ScriptEditingCommands(), new ScriptExecutionCommands());
 	}
 
 	private void registerListeners(Listener... listeners) {
@@ -40,7 +43,7 @@ public class StagePlay extends JavaPlugin {
 	 * Registers commands to the Intake system in bulk and injects the necessary {@link
 	 * app.ashcon.intake.parametric.Module} parameters
 	 */
-	public void registerCommands(Object... commands) {
+	private void registerCommands(Object... commands) {
 		Injector injector = Intake.createInjector();
 		// Bind modules
 		injector.install(new StageActionModule());
