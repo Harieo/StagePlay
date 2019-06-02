@@ -5,12 +5,11 @@ import uk.co.harieo.StagePlay.components.DefinedComponents;
 public enum StageActions {
 
 	START("The starting point for the entity", DefinedComponents.LOCATION),
-	WALK_FORWARD("Walk in the direction it's facing for a certain amount of blocks", DefinedComponents.DISTANCE),
 	WALK_TO("Walks to this location", DefinedComponents.LOCATION),
 	FACE("Face this direction", DefinedComponents.FACING),
 	STOP("Stop walking for a certain time", DefinedComponents.SECONDS),
-	TALK("Speak a line of text", DefinedComponents.TEXT),
-	WAIT("Wait for a certain amount of seconds", DefinedComponents.SECONDS);
+	TALK("Speak a line of text to nearby players", DefinedComponents.TEXT),
+	SHOUT("Speak a line of text to all players", DefinedComponents.TEXT);
 
 	private String usage;
 	private DefinedComponents component;
