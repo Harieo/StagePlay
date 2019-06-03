@@ -81,7 +81,7 @@ public class ScriptActionCommands {
 			component = integerComponent;
 		} else if (definedComponent.equals(DefinedComponent.TEXT)) {
 			StringComponent stringComponent = definedComponent.createComponent();
-			stringComponent.setValue(argument);
+			stringComponent.setValue(argument.trim());
 			component = stringComponent;
 		} else {
 			sender.sendMessage(
@@ -147,7 +147,7 @@ public class ScriptActionCommands {
 		sender.sendMessage(ChatColor.GRAY + "Your Script: " + ChatColor.GREEN + script.getScriptName());
 		sender.sendMessage(
 				ChatColor.GRAY + "Entity: " + ChatColor.YELLOW + script.getEntityType().name() + ChatColor.GRAY
-						+ " called " + ChatColor.GREEN + script.getEntityName());
+						+ " called " + ChatColor.translateAlternateColorCodes('&', script.getEntityName()));
 		sender.sendMessage("");
 		stages.forEach((stage, actions) -> {
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "Stage " + stage);

@@ -31,8 +31,8 @@ public enum StageableEntity {
 	 * @param world to spawn the entity in
 	 * @return the script-able entity
 	 */
-	public ScriptedEntity newEntity(World world) {
-		return new ScriptedEntity<>(clazz, world);
+	public ScriptedEntity newEntity(World world, String name) {
+		return new ScriptedEntity<>(clazz, world, name);
 	}
 
 }

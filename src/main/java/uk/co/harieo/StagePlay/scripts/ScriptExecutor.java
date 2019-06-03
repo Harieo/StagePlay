@@ -32,7 +32,7 @@ public class ScriptExecutor extends BukkitRunnable {
 
 	public ScriptExecutor(World world, StagedScript script) {
 		this.script = script;
-		this.entity = script.getEntityType().newEntity(world);
+		this.entity = script.getEntityType().newEntity(world, script.getEntityName());
 
 		addStartingPoint();
 		addScriptActions();
@@ -141,7 +141,7 @@ public class ScriptExecutor extends BukkitRunnable {
 			// Shouting is to all players, talking (the opposite) is only to players within 15 blocks
 			if (isShouting || entity.getCurrentLocation().distance(player.getLocation()) <= 15) {
 				player.sendMessage(
-						ChatColor.YELLOW + script.getEntityName() + ChatColor.DARK_GRAY + FurCore.ARROWS + " "
+						ChatColor.YELLOW + script.getEntityName() + ChatColor.DARK_GRAY + " " + FurCore.ARROWS + " "
 								+ ChatColor.GRAY + text);
 			}
 		});

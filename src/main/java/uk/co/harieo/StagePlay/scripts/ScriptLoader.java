@@ -1,5 +1,7 @@
 package uk.co.harieo.StagePlay.scripts;
 
+import org.bukkit.ChatColor;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -49,7 +51,7 @@ public class ScriptLoader {
 					&& fullScript.has("entityType")
 					&& fullScript.has("amountOfStages")
 					&& fullScript.has("stages")) {
-				entityName = fullScript.get("entityName").getAsString();
+				entityName = ChatColor.translateAlternateColorCodes('&', fullScript.get("entityName").getAsString().trim());
 				entityType = StageableEntity.valueOf(fullScript.get("entityType").getAsString());
 				amountOfStages = fullScript.get("amountOfStages").getAsInt();
 				stagesObject = fullScript.getAsJsonObject("stages");

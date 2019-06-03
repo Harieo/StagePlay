@@ -22,7 +22,7 @@ public class ScriptedEntity<T extends EntityInsentient> {
 	private int actionIndex = 0;
 
 	@SuppressWarnings("unchecked")
-	public ScriptedEntity(Class<T> clazz, World world) {
+	public ScriptedEntity(Class<T> clazz, World world, String customName) {
 		try {
 			Constructor<?> constructor = clazz.getConstructor(net.minecraft.server.v1_12_R1.World.class);
 			entity = (T) constructor.newInstance(((CraftWorld)world).getHandle());
@@ -44,6 +44,8 @@ public class ScriptedEntity<T extends EntityInsentient> {
 		targetC.clear();
 
 		entity.onGround = true; // Fixes an NMS issue with unnatural spawning and movement
+		entity.setCustomName(customName);
+		entity.setCustomNameVisible(true);
 	}
 
 	public PathfinderGoalSelector getGoalSelector() {
