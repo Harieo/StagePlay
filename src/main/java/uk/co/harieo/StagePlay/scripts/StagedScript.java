@@ -1,5 +1,6 @@
 package uk.co.harieo.StagePlay.scripts;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.google.gson.JsonObject;
@@ -13,8 +14,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import uk.co.harieo.StagePlay.StagePlay;
 import uk.co.harieo.StagePlay.components.StageComponent;
+import uk.co.harieo.StagePlay.components.types.LocationComponent;
 import uk.co.harieo.StagePlay.entities.StageableEntities;
 import uk.co.harieo.StagePlay.utils.ReportResult;
+import uk.co.harieo.StagePlay.utils.ReportResult.ResultType;
 
 public class StagedScript {
 
@@ -29,7 +32,7 @@ public class StagedScript {
 	// The JSONs which store actions and components for each stage
 	private Map<Integer, JsonObject> stageJsons = new HashMap<>();
 	// Stores action as [stage, [action, component]] of which there can be multiple actions per stage
-	private Map<Integer, LinkedHashMap<StageActions, StageComponent>> stagesOfActions = new HashMap<>();
+	private Map<Integer, LinkedHashMap<StageAction, StageComponent>> stagesOfActions = new HashMap<>();
 
 	/**
 	 * Creates a script of actions and components that can be run by a {@link uk.co.harieo.StagePlay.entities.ScriptedEntity}
@@ -101,7 +104,8 @@ public class StagedScript {
 			throw new IllegalStateException("Cannot progress stage without actions");
 		}
 
-		stage = amountOfStages + 1; // The stage that is being edited may not be the latest so make sure not to duplicate
+		stage = amountOfStages
+				+ 1; // The stage that is being edited may not be the latest so make sure not to duplicate
 		amountOfStages++;
 		stagesOfActions.putIfAbsent(stage, new LinkedHashMap<>());
 		stageJsons.putIfAbsent(stage, new JsonObject());
@@ -133,7 +137,7 @@ public class StagedScript {
 	 * @param action to be performed on this stage
 	 * @param component that describes the action
 	 */
-	public void addAction(StageActions action, StageComponent component) {
+	public void addAction(StageAction action, StageComponent component) {
 		getCurrentActions().put(action, component);
 		component.addToJson(action, getStageJson()); // The component handles adding to the JSON with keys and values
 	}
@@ -141,36 +145,48 @@ public class StagedScript {
 	/**
 	 * Code to detect erroneous values in the current script in the event that an unknown error is persisting
 	 *
-	 * @param player to send the report to
+	 * @return whether the script is valid or not
 	 */
-	public void validateStages(Player player) {
+	public ReportResult validateStages() {
 		ReportResult report = new ReportResult(scriptName + " Script Report");
+
+		Location lastApplicableLocation; // The last location that the entity was moved to
+		if (getActionsForStage(1).containsKey(StageAction.START)) {
+			report.addCheckMessage("Stage 1 contains a starting point for the entity", ResultType.SUCCESS);
+			lastApplicableLocation = ((LocationComponent) getActionsForStage(1).get(StageAction.START)).getValue();
+		} else {
+			report.addCheckMessage("Stage 1 does NOT contain a starting point for the entity", ResultType.ERROR);
+			return report; // Further validation requires a starting position as reference
+		}
+
 		for (int i = 1; i <= amountOfStages; i++) {
-			if (stagesOfActions.containsKey(amountOfStages) || stageJsons.containsKey(amountOfStages)) {
-				report.addSuccessMessage("The amount of recorded stages matches the amount that have been created");
-			} else {
-				report.addErrorMessage("The amount of recorded stages DOESN'T match the amount of created stages");
+			Map<StageAction, StageComponent> actions = getActionsForStage(i);
+
+			if (actions.isEmpty()) {
+				report.addCheckMessage("Stage " + i + " is redundant: Has no actions", ResultType.WARN);
+				continue; // Without any actions, there is nothing more to validate here
 			}
 
-			if (stagesOfActions.containsKey(i)) {
-				report.addSuccessMessage("Stage " + i + " is recorded");
-			} else {
-				report.addErrorMessage("Stage " + i + " has NOT been recorded");
-			}
+			for (StageAction action : actions.keySet()) {
+				if (action.equals(StageAction.WALK_TO)) {
+					Location location = ((LocationComponent) actions.get(action)).getValue();
+					if (location.distance(lastApplicableLocation) > 20) {
+						report.addCheckMessage("A " + StageAction.WALK_TO.name()
+										+ " (Stage " + i + ") action is more than 20 blocks from the last location, "
+										+ "which will cause an execution error",
+								ResultType.ERROR);
+					} else {
+						report.addCheckMessage(
+								"The entity at Stage " + i + " walks no more than 20 blocks from the last location",
+								ResultType.SUCCESS);
+					}
 
-			if (stagesOfActions.get(i).isEmpty()) {
-				report.addErrorMessage("Stage " + i + " has no actions in it");
-			} else {
-				report.addSuccessMessage("Stage " + i + " has at least 1 action");
-			}
-
-			if (stageJsons.containsKey(i)) {
-				report.addSuccessMessage("Stage " + i + " has a JSON record of its recorded actions");
-			} else {
-				report.addErrorMessage("Stage " + i + " does not have a record of its recorded actions");
+					lastApplicableLocation = location;
+				}
 			}
 		}
-		report.sendReport(player);
+
+		return report;
 	}
 
 	/**
@@ -181,6 +197,10 @@ public class StagedScript {
 	 * @throws FileAlreadyExistsException when another script exists with the same name, preventing it being saved
 	 */
 	public boolean commit() throws FileNotFoundException, FileAlreadyExistsException {
+		if (validateStages().hasEncounteredError()) { // This should be done more thoroughly on command
+			return false;
+		}
+
 		for (int i = 1; i <= amountOfStages; i++) {
 			mainStagesJson.add(String.valueOf(i), stageJsons.get(i));
 		}
@@ -230,22 +250,31 @@ public class StagedScript {
 	 * @param stage to get the actions of
 	 * @return a map of the actions and their matching components
 	 */
-	public Map<StageActions, StageComponent> getActionsForStage(int stage) {
+	public Map<StageAction, StageComponent> getActionsForStage(int stage) {
 		return stagesOfActions.getOrDefault(stage, null);
 	}
 
 	/**
 	 * @return a map of the actions and their matching components for the current editing stage
 	 */
-	public Map<StageActions, StageComponent> getCurrentActions() {
+	public Map<StageAction, StageComponent> getCurrentActions() {
 		return stagesOfActions.get(stage);
 	}
 
 	/**
 	 * @return a multi-dimensional map with all stages and a map of all actions for that stage
 	 */
-	public Map<Integer, LinkedHashMap<StageActions, StageComponent>> getAllActions() {
+	public Map<Integer, LinkedHashMap<StageAction, StageComponent>> getAllActions() {
 		return stagesOfActions;
+	}
+
+	public void removeLatestStage() {
+		amountOfStages--;
+		stage = amountOfStages; // Prevent editing a removed stage
+
+		int removedStage = amountOfStages + 1;
+		stageJsons.remove(removedStage);
+		stagesOfActions.remove(removedStage);
 	}
 
 	/**

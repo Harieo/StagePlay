@@ -2,7 +2,7 @@ package uk.co.harieo.StagePlay.scripts;
 
 import uk.co.harieo.StagePlay.components.DefinedComponents;
 
-public enum StageActions {
+public enum StageAction {
 
 	START("The starting point for the entity", DefinedComponents.LOCATION),
 	WALK_TO("Walks to this location", DefinedComponents.LOCATION),
@@ -19,7 +19,7 @@ public enum StageActions {
 	 * @param usage what the action is used to do
 	 * @param requiredComponent the component needed to perform the action (e.g how far to go)
 	 */
-	StageActions(String usage, DefinedComponents requiredComponent) {
+	StageAction(String usage, DefinedComponents requiredComponent) {
 		this.usage = usage;
 		this.component = requiredComponent;
 	}

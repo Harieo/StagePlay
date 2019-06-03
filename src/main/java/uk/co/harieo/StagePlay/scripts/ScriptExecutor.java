@@ -23,8 +23,8 @@ public class ScriptExecutor extends BukkitRunnable {
 	private ScriptedEntity entity;
 
 	private int stageIndex = 1;
-	private Map<Integer, LinkedHashMap<StageActions, StageComponent>> stages = new HashMap<>();
-	private List<StageActions> actionsPendingRemoval = new ArrayList<>();
+	private Map<Integer, LinkedHashMap<StageAction, StageComponent>> stages = new HashMap<>();
+	private List<StageAction> actionsPendingRemoval = new ArrayList<>();
 
 	private boolean pendingDestination = false;
 	private Location lastKnownLocation;
@@ -50,7 +50,7 @@ public class ScriptExecutor extends BukkitRunnable {
 			return;
 		}
 
-		Map<StageActions, StageComponent> actions = stages.get(stageIndex);
+		Map<StageAction, StageComponent> actions = stages.get(stageIndex);
 		if (actions == null) {
 			throw new IllegalStateException("A script was executed with no applicable actions or stages");
 		}
@@ -68,12 +68,12 @@ public class ScriptExecutor extends BukkitRunnable {
 		// Triggered on the WAIT action
 		if (pendingTime > 0) {
 			pendingTime--;
-			actions.remove(StageActions.WAIT); // The wait action has been enacted, don't repeat
+			actions.remove(StageAction.WAIT); // The wait action has been enacted, don't repeat
 			return;
 		}
 
 		actionsPendingRemoval.clear();
-		for (StageActions action : actions.keySet()) {
+		for (StageAction action : actions.keySet()) {
 			switch (action) {
 				case START: {
 					break;
@@ -105,7 +105,7 @@ public class ScriptExecutor extends BukkitRunnable {
 			actionsPendingRemoval.add(action);
 		}
 
-		for (StageActions removeAction : actionsPendingRemoval) {
+		for (StageAction removeAction : actionsPendingRemoval) {
 			stages.get(stageIndex).remove(removeAction);
 		}
 
@@ -113,19 +113,19 @@ public class ScriptExecutor extends BukkitRunnable {
 	}
 
 	private void addStartingPoint() {
-		Map<StageActions, StageComponent> firstStageActions = script.getActionsForStage(1);
-		if (!firstStageActions.containsKey(StageActions.START)) {
+		Map<StageAction, StageComponent> firstStageActions = script.getActionsForStage(1);
+		if (!firstStageActions.containsKey(StageAction.START)) {
 			throw new RuntimeException("Attempt to execute script with no START action");
 		}
 
-		LocationComponent component = (LocationComponent) firstStageActions.get(StageActions.START);
+		LocationComponent component = (LocationComponent) firstStageActions.get(StageAction.START);
 		entity.setLocation(component.getValue());
 	}
 
 	private void addScriptActions() {
 		for (int i = 1; i <= script.getAmountOfStages(); i++) {
 			// As the actions will get removed in processing, we need a new map so the script is not edited
-			LinkedHashMap<StageActions, StageComponent> newActionsMap = new LinkedHashMap<>(
+			LinkedHashMap<StageAction, StageComponent> newActionsMap = new LinkedHashMap<>(
 					script.getActionsForStage(i));
 			stages.put(i, newActionsMap);
 		}

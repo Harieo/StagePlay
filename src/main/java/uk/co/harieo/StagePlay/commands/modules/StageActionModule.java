@@ -11,16 +11,16 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import uk.co.harieo.StagePlay.scripts.StageActions;
+import uk.co.harieo.StagePlay.scripts.StageAction;
 
 public class StageActionModule extends AbstractModule {
 
 	@Override
 	public void configure() {
-		bind(StageActions.class).toProvider(new ActionProvider());
+		bind(StageAction.class).toProvider(new ActionProvider());
 	}
 
-	private static class ActionProvider implements Provider<StageActions> {
+	private static class ActionProvider implements Provider<StageAction> {
 
 		@Override
 		public String getName() {
@@ -29,12 +29,12 @@ public class StageActionModule extends AbstractModule {
 
 		@Nullable
 		@Override
-		public StageActions get(CommandArgs args, List<? extends Annotation> mods)
+		public StageAction get(CommandArgs args, List<? extends Annotation> mods)
 				throws ArgumentException, ProvisionException {
 			String rawActionType = args.next();
 
-			StageActions action = null;
-			for (StageActions stageAction : StageActions.values()) {
+			StageAction action = null;
+			for (StageAction stageAction : StageAction.values()) {
 				if (stageAction.name().equalsIgnoreCase(rawActionType.toLowerCase())) {
 					action = stageAction;
 				}
@@ -50,7 +50,7 @@ public class StageActionModule extends AbstractModule {
 		@Override
 		public List<String> getSuggestions(String prefix, Namespace namespace, List<? extends Annotation> modifiers) {
 			List<String> typeNames = new ArrayList<>();
-			for (StageActions action : StageActions.values()) {
+			for (StageAction action : StageAction.values()) {
 				if (action.name().startsWith(prefix)) {
 					typeNames.add(action.name());
 				}

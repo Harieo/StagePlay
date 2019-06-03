@@ -2,7 +2,7 @@ package uk.co.harieo.StagePlay.components;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import uk.co.harieo.StagePlay.scripts.StageActions;
+import uk.co.harieo.StagePlay.scripts.StageAction;
 
 public abstract class StageComponent<V> {
 
@@ -39,6 +39,6 @@ public abstract class StageComponent<V> {
 	 * @param action as the property key
 	 * @param object to add the component to
 	 */
-	public abstract void addToJson(StageActions action, JsonObject object);
+	public abstract void addToJson(StageAction action, JsonObject object);
 
 }

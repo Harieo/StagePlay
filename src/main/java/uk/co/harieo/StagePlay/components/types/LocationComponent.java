@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import uk.co.harieo.StagePlay.components.StageComponent;
-import uk.co.harieo.StagePlay.scripts.StageActions;
+import uk.co.harieo.StagePlay.scripts.StageAction;
 
 public class LocationComponent extends StageComponent<Location> {
 
@@ -20,7 +20,7 @@ public class LocationComponent extends StageComponent<Location> {
 	}
 
 	@Override
-	public void addToJson(StageActions action, JsonObject object) {
+	public void addToJson(StageAction action, JsonObject object) {
 		object.addProperty(action.name(),
 				getValue().getWorld().getName() + ":" + getValue().getX() + ":" + getValue().getY() + ":"
 						+ getValue().getZ());

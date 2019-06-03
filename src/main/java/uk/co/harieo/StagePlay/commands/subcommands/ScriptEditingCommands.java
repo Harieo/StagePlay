@@ -10,12 +10,17 @@ import app.ashcon.intake.group.Group;
 import app.ashcon.intake.parametric.annotation.Text;
 import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import uk.co.harieo.StagePlay.commands.ScriptCommand;
 import uk.co.harieo.StagePlay.entities.StageableEntities;
-import uk.co.harieo.StagePlay.scripts.StageActions;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
+import uk.co.harieo.StagePlay.utils.ReportResult;
 
 public class ScriptEditingCommands {
+
+	private static List<UUID> pendingConfirmation = new ArrayList<>();
 
 	@Group(@At("script"))
 	@Command(aliases = {"name", "changename"},
@@ -97,6 +102,26 @@ public class ScriptEditingCommands {
 	}
 
 	@Group(@At("script"))
+	@Command(aliases = {"deletestage", "removestage", "delstage"},
+			 desc = "Delete a stage and all its actions")
+	public void removeLatestStage(@Sender Player sender) {
+		if (!ScriptCommand.isEditingScript(sender)) {
+			sender.sendMessage(ChatColor.RED + "You are not editing a script, use /script create");
+			return;
+		}
+
+		StagedScript script = ScriptCommand.getScript(sender);
+
+		if (script.getAmountOfStages() == 1) {
+			sender.sendMessage(
+					ChatColor.RED + "You cannot remove the first stage from the script!");
+		} else {
+			script.removeLatestStage();
+			sender.sendMessage(ChatColor.GREEN + "Removed latest stage from the script!");
+		}
+	}
+
+	@Group(@At("script"))
 	@Command(aliases = {"commit", "finish"},
 			 desc = "Finalizes the script to a file")
 	public void commitScript(@Sender Player sender) {
@@ -106,21 +131,38 @@ public class ScriptEditingCommands {
 		}
 
 		StagedScript script = ScriptCommand.getScript(sender);
-		if (!script.getActionsForStage(1).containsKey(StageActions.START)) {
-			sender.sendMessage(
-					ChatColor.RED + "You must specify a starting point for your script, use /script add start");
-			return;
+
+		sender.sendMessage("");
+		sender.sendMessage(ChatColor.GRAY + "Committing " + ChatColor.GREEN + script.getScriptName() + ChatColor.GRAY
+				+ " to file");
+		sender.sendMessage("");
+
+		if (!pendingConfirmation.contains(sender.getUniqueId())) {
+			ReportResult scriptValidator = script.validateStages();
+			scriptValidator.sendReport(sender);
+
+			if (scriptValidator.hasEncounteredError()) {
+				return; // Don't waste time on commit if the commit can never succeed
+			} else if (scriptValidator.hasEncounteredWarning()) {
+				pendingConfirmation.add(sender.getUniqueId());
+				sender.sendMessage("");
+				sender.sendMessage(ChatColor.YELLOW + "Are you sure you want to commit with warnings? " +
+						ChatColor.GRAY + "Use '/script commit' again to confirm or continue editing.");
+				return;
+			}
+			// If there are no errors or warnings, commit will continue without confirmation
 		}
 
-		script.validateStages(sender); // TODO: BUG TESTING CODE
 		try {
 			if (script.commit()) {
 				sender.sendMessage(
 						ChatColor.GREEN + "Your script has been saved to the plugin folder as " + script.getScriptName()
 								+ ".json");
 				ScriptCommand.finishedScript(sender); // The script can't be edited after committed
+				pendingConfirmation.remove(sender.getUniqueId());
 			} else {
-				sender.sendMessage(ChatColor.RED + "An unexpected internal error occurred, please check console!");
+				sender.sendMessage(ChatColor.RED
+						+ "An error occurred which was not validated, please report this to the plugin developer!");
 			}
 		} catch (FileAlreadyExistsException ignored) {
 			sender.sendMessage(ChatColor.RED + "A script with this name is already saved into the plugin folder!");
@@ -130,6 +172,15 @@ public class ScriptEditingCommands {
 					ChatColor.RED
 							+ "An internal error occurred: The plugin directory does not exist and cannot be created");
 		}
+	}
+
+	/**
+	 * Removes any pending confirmation, if it exists, for script commit
+	 *
+	 * @param player who is cancelling their script
+	 */
+	public static void cancelledScript(Player player) {
+		pendingConfirmation.remove(player.getUniqueId());
 	}
 
 }

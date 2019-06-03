@@ -11,6 +11,7 @@ import app.ashcon.intake.parametric.annotation.Text;
 import java.util.*;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
+import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
 import uk.co.harieo.StagePlay.entities.StageableEntities;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
 
@@ -74,6 +75,8 @@ public class ScriptCommand {
 			scriptsInProgress.remove(sender.getUniqueId());
 			sender.sendMessage(ChatColor.RED + "Your current script has been deleted");
 		}
+
+		ScriptEditingCommands.cancelledScript(sender);
 	}
 
 }

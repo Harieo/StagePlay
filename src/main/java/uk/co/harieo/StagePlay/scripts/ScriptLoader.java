@@ -100,7 +100,7 @@ public class ScriptLoader {
 	 * @param serializedComponent JSON encoded component value
 	 * @return the loaded component
 	 */
-	private static StageComponent convertToComponent(StageActions action, JsonElement serializedComponent) {
+	private static StageComponent convertToComponent(StageAction action, JsonElement serializedComponent) {
 		StageComponent component;
 		switch (action.getComponent()) {
 			case TEXT:
@@ -151,7 +151,7 @@ public class ScriptLoader {
 			}
 
 			for (Entry<String, JsonElement> entry : stageJson.entrySet()) {
-				StageActions action = StageActions.valueOf(entry.getKey());
+				StageAction action = StageAction.valueOf(entry.getKey());
 
 				StageComponent component = convertToComponent(action, entry.getValue());
 				if (component == null) {

@@ -19,7 +19,7 @@ import uk.co.harieo.StagePlay.components.DefinedComponents;
 import uk.co.harieo.StagePlay.components.StageComponent;
 import uk.co.harieo.StagePlay.components.types.*;
 import uk.co.harieo.StagePlay.scripts.ScriptLoader;
-import uk.co.harieo.StagePlay.scripts.StageActions;
+import uk.co.harieo.StagePlay.scripts.StageAction;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
 import uk.co.harieo.StagePlay.utils.Utils;
 
@@ -28,7 +28,7 @@ public class ScriptActionCommands {
 	@Group(@At("script"))
 	@Command(aliases = {"add", "action", "addaction"},
 			 desc = "Add an action to the entity")
-	public void addAction(@Sender Player sender, StageActions action, @Nullable @Text String argument) {
+	public void addAction(@Sender Player sender, StageAction action, @Nullable @Text String argument) {
 		if (!ScriptCommand.isEditingScript(sender)) {
 			sender.sendMessage(ChatColor.RED + "You are not editing a script, use /script create");
 			return;
@@ -97,12 +97,35 @@ public class ScriptActionCommands {
 	}
 
 	@Group(@At("script"))
+	@Command(aliases = {"delete", "remove"},
+			 desc = "Remove an action from the current stage")
+	public void removeAction(@Sender Player sender, StageAction action) {
+		if (!ScriptCommand.isEditingScript(sender)) {
+			sender.sendMessage(ChatColor.RED
+					+ "You are not editing a script, use /script create or /script status <loaded-script>");
+			return;
+		}
+
+		StagedScript script = ScriptCommand.getScript(sender);
+		Map<StageAction, StageComponent> actions = script.getCurrentActions();
+		if (actions.containsKey(action)) {
+			actions.remove(action);
+			sender.sendMessage(
+					ChatColor.GREEN + "Removed " + action.name() + " from Stage " + script.getCurrentStage());
+		} else {
+			sender.sendMessage(ChatColor.RED
+					+ "This stage has no such action, to change the stage being edited: /script stage <stage>");
+		}
+	}
+
+	@Group(@At("script"))
 	@Command(aliases = {"list", "status"},
 			 desc = "List the actions set for your script")
 	public void listActions(@Sender Player sender, @Nullable String loadedScriptName) {
 		// If they have provided a script name, they are searching for another script
 		if (!ScriptCommand.isEditingScript(sender) && loadedScriptName == null) {
-			sender.sendMessage(ChatColor.RED + "You are not editing a script, use /script create or /script status <loaded-script>");
+			sender.sendMessage(ChatColor.RED
+					+ "You are not editing a script, use /script create or /script status <loaded-script>");
 			return;
 		} else if (!RankCache.getCachedInfo(sender).hasPermission(Rank.MODERATOR)) {
 			sender.sendMessage(ChatColor.RED + "You must be a Moderator or above to use scripts");
@@ -112,14 +135,14 @@ public class ScriptActionCommands {
 		StagedScript script;
 		if (loadedScriptName == null) { // Expecting the player to be editing a script in-progress
 			script = ScriptCommand.getScript(sender);
-		} else if (ScriptLoader.isScriptLoaded(loadedScriptName)){ // Else they want to see a loaded script
+		} else if (ScriptLoader.isScriptLoaded(loadedScriptName)) { // Else they want to see a loaded script
 			script = ScriptLoader.getScript(loadedScriptName);
 		} else {
 			sender.sendMessage(ChatColor.RED + "No completed scripts are loaded with the name " + loadedScriptName);
 			return;
 		}
 
-		Map<Integer, LinkedHashMap<StageActions, StageComponent>> stages = script.getAllActions();
+		Map<Integer, LinkedHashMap<StageAction, StageComponent>> stages = script.getAllActions();
 
 		sender.sendMessage(ChatColor.GRAY + "Your Script: " + ChatColor.GREEN + script.getScriptName());
 		sender.sendMessage(
