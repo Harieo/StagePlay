@@ -174,6 +174,19 @@ public class ScriptEditingCommands {
 		}
 	}
 
+	@Group(@At("script"))
+	@Command(aliases = {"validate", "verify"},
+			 desc = "Get a report on any errors your script has")
+	public void validateScript(@Sender Player sender) {
+		if (!ScriptCommand.isEditingScript(sender)) {
+			sender.sendMessage(ChatColor.RED + "You are not editing a script, use /script create");
+			return;
+		}
+
+		StagedScript script = ScriptCommand.getScript(sender);
+		script.validateStages().sendReport(sender);
+	}
+
 	/**
 	 * Removes any pending confirmation, if it exists, for script commit
 	 *
