@@ -138,7 +138,8 @@ public class ScriptHelpCommands {
 		COMMIT_SCRIPT("commit", null, "Save your script to the plugin folder as a file"),
 		VALIDATE_SCRIPT("validate", null, "Get a report of any errors/warnings from your current script"),
 		LOAD_SCRIPT("load", "<script-name>", "Load a script from a file in the plugin folder"),
-		EXECUTE_SCRIPT("execute", "<script-name>", "Run a script that has been loaded via /script load");
+		EXECUTE_SCRIPT("execute", "<script-name>", "Run a script that has been loaded via /script load"),
+		SIMULATE_SCRIPT("simulate", null, "Run a script that you are editing without saving it");
 
 		private String subCommand;
 		private String arguments;

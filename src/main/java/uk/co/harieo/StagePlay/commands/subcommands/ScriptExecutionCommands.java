@@ -11,8 +11,11 @@ import app.ashcon.intake.group.Group;
 import java.io.FileNotFoundException;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
+import uk.co.harieo.StagePlay.commands.ScriptCommand;
 import uk.co.harieo.StagePlay.scripts.ScriptExecutor;
 import uk.co.harieo.StagePlay.scripts.ScriptLoader;
+import uk.co.harieo.StagePlay.scripts.StagedScript;
+import uk.co.harieo.StagePlay.utils.ReportResult;
 
 public class ScriptExecutionCommands {
 
@@ -57,6 +60,28 @@ public class ScriptExecutionCommands {
 					ChatColor.RED + "No script with the name " + scriptName + " are loaded, use /script load "
 							+ scriptName);
 		}
+	}
+
+	@Group(@At("script"))
+	@Command(aliases = "simulate",
+			 desc = "Simulate an unsaved script")
+	public void simulateScript(@Sender Player sender) {
+		if (!ScriptCommand.isEditingScript(sender)) {
+			sender.sendMessage(
+					ChatColor.RED + "You are not editing a script, use /script load <script> for saved scripts");
+			return;
+		}
+
+		StagedScript script = ScriptCommand.getScript(sender);
+		ReportResult report = script.validateStages();
+
+		if (report.hasEncounteredError()) {
+			sender.sendMessage(
+					ChatColor.RED + "Validation of your script has failed, use /script validate for more information!");
+			return;
+		}
+
+		new ScriptExecutor(sender.getWorld(), script).runScript();
 	}
 
 }

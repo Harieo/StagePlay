@@ -8,7 +8,8 @@ public enum StageAction {
 	WALK_TO("Walks to this location", DefinedComponent.LOCATION),
 	WAIT("Pause the script for a certain amount of time", DefinedComponent.SECONDS),
 	TALK("Speak a line of text to nearby players", DefinedComponent.TEXT),
-	SHOUT("Speak a line of text to all players", DefinedComponent.TEXT);
+	SHOUT("Speak a line of text to all players", DefinedComponent.TEXT),
+	STOP("Stop the script after a certain amount of seconds", DefinedComponent.SECONDS);
 
 	private String usage;
 	private DefinedComponent component;

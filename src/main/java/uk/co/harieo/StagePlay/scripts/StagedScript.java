@@ -166,6 +166,7 @@ public class StagedScript {
 				continue; // Without any actions, there is nothing more to validate here
 			}
 
+			int stopActionOccurrences = 0;
 			for (StageAction action : actions.keySet()) {
 				if (action.equals(StageAction.WALK_TO)) {
 					Location location = ((LocationComponent) actions.get(action)).getValue();
@@ -181,7 +182,19 @@ public class StagedScript {
 					}
 
 					lastApplicableLocation = location;
+				} else if (action.equals(StageAction.STOP)) {
+					stopActionOccurrences++;
 				}
+			}
+
+			if (stopActionOccurrences == 0) {
+				report.addCheckMessage("The script has no stop action meaning the entity won't despawn",
+						ResultType.WARN);
+			} else if (stopActionOccurrences > 1) {
+				report.addCheckMessage("The script has a redundant stop action: More than 1 stop action found",
+						ResultType.WARN);
+			} else {
+				report.addCheckMessage("There is a single stop action to end the script properly", ResultType.SUCCESS);
 			}
 		}
 

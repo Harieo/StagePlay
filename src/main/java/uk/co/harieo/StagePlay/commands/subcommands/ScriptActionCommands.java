@@ -67,10 +67,6 @@ public class ScriptActionCommands {
 			int seconds;
 			try {
 				seconds = Integer.parseInt(argument.trim());
-				if (seconds < 1) {
-					sender.sendMessage(ChatColor.RED + "You cannot specify 0 seconds as the action would be redundant");
-					return;
-				}
 			} catch (NumberFormatException ignored) {
 				sender.sendMessage(ChatColor.RED + "This amount of seconds is invalid or not whole: " + argument);
 				return;

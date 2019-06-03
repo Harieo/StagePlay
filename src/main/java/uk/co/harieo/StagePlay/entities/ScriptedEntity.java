@@ -80,6 +80,10 @@ public class ScriptedEntity<T extends EntityInsentient> {
 		actionIndex++;
 	}
 
+	public void destroyEntity() {
+		entity.die();
+	}
+
 	public T getEntity() {
 		return entity;
 	}

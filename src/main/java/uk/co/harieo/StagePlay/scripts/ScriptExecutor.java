@@ -29,29 +29,39 @@ public class ScriptExecutor extends BukkitRunnable {
 	private boolean pendingDestination = false;
 	private Location lastKnownLocation;
 	private int pendingTime = 0;
+	private boolean finalPendingTime = false;
 
 	public ScriptExecutor(World world, StagedScript script) {
 		this.script = script;
-		this.entity = script.getEntityType().newEntity(world, script.getEntityName());
+		// Translating color codes here benefits simulations that aren't final
+		this.entity = script.getEntityType()
+				.newEntity(world, ChatColor.translateAlternateColorCodes('&', script.getEntityName()));
 
 		addStartingPoint();
 		addScriptActions();
 		((CraftWorld) world).getHandle().addEntity(entity.getEntity());
 	}
 
+	/**
+	 * Runs the script with default timing (1 action per second)
+	 */
 	public void runScript() {
 		runTaskTimer(StagePlay.getInstance(), 20, 20); // 1 second intervals
 	}
 
 	@Override
 	public void run() {
-		if (!stages.containsKey(stageIndex)) {
+		if (!stages.containsKey(stageIndex)) { // The script has nothing left to execute and pending actions are resolved
+			cancel();
+			return;
+		} else if (!entity.getEntity().isAlive()) {
 			cancel();
 			return;
 		}
 
 		Map<StageAction, StageComponent> actions = stages.get(stageIndex);
 		if (actions == null) {
+			cancel();
 			throw new IllegalStateException("A script was executed with no applicable actions or stages");
 		}
 
@@ -68,7 +78,11 @@ public class ScriptExecutor extends BukkitRunnable {
 		// Triggered on the WAIT action
 		if (pendingTime > 0) {
 			pendingTime--;
-			actions.remove(StageAction.WAIT); // The wait action has been enacted, don't repeat
+			actions.remove(StageAction.WAIT); // There is n
+			return;
+		} else if (finalPendingTime) { // Triggered on STOP action
+			entity.destroyEntity(); // No more time to wait and destroy variable is true
+			cancel();
 			return;
 		}
 
@@ -95,10 +109,13 @@ public class ScriptExecutor extends BukkitRunnable {
 					speak(actions.get(action), true);
 					break;
 				case WAIT:
-					IntegerComponent component = (IntegerComponent) actions.get(action);
-					pendingTime += component.getValue();
+					addPendingTime(actions.get(action), false);
+					return;
+				case STOP:
+					addPendingTime(actions.get(action), true);
 					return;
 				default:
+					cancel();
 					throw new IllegalStateException("Attempt to execute unrecognised action");
 			}
 			// This helps to prevent repeating actions
@@ -112,9 +129,13 @@ public class ScriptExecutor extends BukkitRunnable {
 		stageIndex++;
 	}
 
+	/**
+	 * Parses the starting point for the entity, which will be its spawn location
+	 */
 	private void addStartingPoint() {
 		Map<StageAction, StageComponent> firstStageActions = script.getActionsForStage(1);
 		if (!firstStageActions.containsKey(StageAction.START)) {
+			cancel();
 			throw new RuntimeException("Attempt to execute script with no START action");
 		}
 
@@ -122,6 +143,9 @@ public class ScriptExecutor extends BukkitRunnable {
 		entity.setLocation(component.getValue());
 	}
 
+	/**
+	 * Add all actions from the {@link #script} to local fields so they can be executed
+	 */
 	private void addScriptActions() {
 		for (int i = 1; i <= script.getAmountOfStages(); i++) {
 			// As the actions will get removed in processing, we need a new map so the script is not edited
@@ -131,10 +155,35 @@ public class ScriptExecutor extends BukkitRunnable {
 		}
 	}
 
+	/**
+	 * Adds more time to the {@link #pendingTime} field and sets {@link #finalPendingTime} to true which will destroy the
+	 * entity when the time runs out, if specified.
+	 *
+	 * @param component which is an instance of {@link IntegerComponent} and contains the time to add
+	 * @param isToStop whether or not this is a countdown to stop the script or not
+	 */
+	private void addPendingTime(StageComponent component, boolean isToStop) {
+		IntegerComponent integerComponent = (IntegerComponent) component;
+		pendingTime += integerComponent.getValue();
+		finalPendingTime = isToStop;
+	}
+
+	/**
+	 * Converts a {@link StageComponent} into a {@link LocationComponent} and returns the value of the {@link LocationComponent}
+	 *
+	 * @param component which is an instance of {@link LocationComponent}
+	 * @return the value of the casted {@link LocationComponent}
+	 */
 	private Location getLocationFromGenericComponent(StageComponent component) {
 		return ((LocationComponent) component).getValue();
 	}
 
+	/**
+	 * Sends a message to all applicable players which appears to be from the entity
+	 *
+	 * @param component which is an instance of {@link StringComponent} containing the text to be spoken
+	 * @param isShouting whether to shout (all players will hear) or talk (only players within 15 blocks will hear)
+	 */
 	private void speak(StageComponent component, boolean isShouting) {
 		String text = ((StringComponent) component).getValue();
 		Bukkit.getOnlinePlayers().forEach(player -> {
