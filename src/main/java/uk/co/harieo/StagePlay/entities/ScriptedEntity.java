@@ -1,5 +1,6 @@
 package uk.co.harieo.StagePlay.entities;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
@@ -17,6 +18,7 @@ public class ScriptedEntity<T extends EntityInsentient> {
 	private PathfinderGoalSelector targetSelector;
 
 	private Location location;
+	private World spawnWorld;
 	private int actionIndex = 0;
 
 	@SuppressWarnings("unchecked")
@@ -30,6 +32,7 @@ public class ScriptedEntity<T extends EntityInsentient> {
 
 		this.goalSelector = entity.goalSelector;
 		this.targetSelector = entity.targetSelector;
+		this.spawnWorld = world;
 
 		LinkedHashSet goalB = (LinkedHashSet) Utils.getPrivateField("b", PathfinderGoalSelector.class, entity.goalSelector);
 		goalB.clear();
@@ -39,6 +42,8 @@ public class ScriptedEntity<T extends EntityInsentient> {
 		targetB.clear();
 		LinkedHashSet targetC = (LinkedHashSet) Utils.getPrivateField("c", PathfinderGoalSelector.class, entity.targetSelector);
 		targetC.clear();
+
+		entity.onGround = true; // Fixes an NMS issue with unnatural spawning and movement
 	}
 
 	public PathfinderGoalSelector getGoalSelector() {
@@ -55,8 +60,8 @@ public class ScriptedEntity<T extends EntityInsentient> {
 		this.location = location;
 	}
 
-	public Location getCurrentLocation() {
-		return location;
+		public Location getCurrentLocation() {
+		return new Location(spawnWorld, entity.locX, entity.locY, entity.locZ);
 	}
 
 	public boolean isLocated() {

@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import uk.co.harieo.StagePlay.StagePlay;
 import uk.co.harieo.StagePlay.components.StageComponent;
@@ -28,7 +29,7 @@ public class StagedScript {
 	// The JSONs which store actions and components for each stage
 	private Map<Integer, JsonObject> stageJsons = new HashMap<>();
 	// Stores action as [stage, [action, component]] of which there can be multiple actions per stage
-	private Map<Integer, Map<StageActions, StageComponent>> stagesOfActions = new HashMap<>();
+	private Map<Integer, LinkedHashMap<StageActions, StageComponent>> stagesOfActions = new HashMap<>();
 
 	/**
 	 * Creates a script of actions and components that can be run by a {@link uk.co.harieo.StagePlay.entities.ScriptedEntity}
@@ -102,7 +103,7 @@ public class StagedScript {
 
 		stage = amountOfStages + 1; // The stage that is being edited may not be the latest so make sure not to duplicate
 		amountOfStages++;
-		stagesOfActions.putIfAbsent(stage, new HashMap<>());
+		stagesOfActions.putIfAbsent(stage, new LinkedHashMap<>());
 		stageJsons.putIfAbsent(stage, new JsonObject());
 	}
 
@@ -243,7 +244,7 @@ public class StagedScript {
 	/**
 	 * @return a multi-dimensional map with all stages and a map of all actions for that stage
 	 */
-	public Map<Integer, Map<StageActions, StageComponent>> getAllActions() {
+	public Map<Integer, LinkedHashMap<StageActions, StageComponent>> getAllActions() {
 		return stagesOfActions;
 	}
 

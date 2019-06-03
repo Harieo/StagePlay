@@ -10,9 +10,7 @@ public enum DefinedComponents {
 	DISTANCE("Distance", "An amount of blocks in a straight line", "5.5", DoubleComponent.class),
 	LOCATION("Location", "A 3D (x, y, z) location of a destination or starting point", "X:5 Y:15 Z:15.7",
 			LocationComponent.class),
-	SECONDS("Seconds", "An amount of time in seconds", "6", IntegerComponent.class),
-	FACING("Face Direction", "The yaw and pitch of where the entity is looking", "-90, 4 (East, Mid-Height)",
-			FaceDirectionComponent.class);
+	SECONDS("Seconds", "An amount of time in seconds", "6", IntegerComponent.class);
 
 	private String name;
 	private String description;
@@ -61,7 +59,7 @@ public enum DefinedComponents {
 	 * @return whether the player's location can be used without manual input
 	 */
 	public boolean doesUseLocation() {
-		return componentClass == LocationComponent.class || componentClass == FaceDirectionComponent.class;
+		return componentClass == LocationComponent.class;
 	}
 
 	/**

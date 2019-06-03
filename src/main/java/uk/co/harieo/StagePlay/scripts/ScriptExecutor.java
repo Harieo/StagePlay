@@ -1,71 +1,150 @@
 package uk.co.harieo.StagePlay.scripts;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Map;
+import java.util.*;
 import net.minecraft.server.v1_12_R1.*;
+import uk.co.harieo.FurCore.FurCore;
+import uk.co.harieo.StagePlay.StagePlay;
 import uk.co.harieo.StagePlay.components.StageComponent;
-import uk.co.harieo.StagePlay.components.types.FaceDirectionComponent;
-import uk.co.harieo.StagePlay.components.types.FaceDirectionComponent.Facing;
+import uk.co.harieo.StagePlay.components.types.IntegerComponent;
 import uk.co.harieo.StagePlay.components.types.LocationComponent;
 import uk.co.harieo.StagePlay.components.types.StringComponent;
-import uk.co.harieo.StagePlay.entities.PathfinderGoalSpeak;
-import uk.co.harieo.StagePlay.entities.PathfinderGoalWalkTo;
 import uk.co.harieo.StagePlay.entities.ScriptedEntity;
 
-public class ScriptExecutor {
+public class ScriptExecutor extends BukkitRunnable {
 
-	public static void executeScript(World world, StagedScript script) {
-		ScriptedEntity scriptedEntity = script.getEntityType().newEntity(world);
+	private StagedScript script;
+	private ScriptedEntity entity;
 
-		for (int i = 1; i <= script.getAmountOfStages(); i++) {
-			Map<StageActions, StageComponent> actions = script.getActionsForStage(i);
-			for (StageActions action : actions.keySet()) {
-				switch (action) {
-					case START: {
-						scriptedEntity.setLocation(getLocationFromGenericComponent(actions.get(action)));
-						break;
-					}
-					case FACE: {
-						Facing facing = ((FaceDirectionComponent) actions.get(action)).getValue();
-						scriptedEntity.addGoalAction(new PathfinderGoalLookAtPlayer(scriptedEntity.getEntity(),
-								EntityHuman.class, facing.getYaw(), facing.getPitch()));
-						break;
-					}
-					case WALK_TO:
-						scriptedEntity.addGoalAction(new PathfinderGoalWalkTo(scriptedEntity.getEntity(),
-								getLocationFromGenericComponent(actions.get(action))));
-						break;
-					case TALK:
-						addSpeakPathfinder(scriptedEntity, actions.get(action), false);
-						break;
-					case SHOUT:
-						addSpeakPathfinder(scriptedEntity, actions.get(action), true);
-						break;
-					case STOP:
-						return;
-					default:
-						throw new IllegalStateException("Attempt to execute unrecognised action");
-				}
+	private int stageIndex = 1;
+	private Map<Integer, LinkedHashMap<StageActions, StageComponent>> stages = new HashMap<>();
+	private List<StageActions> actionsPendingRemoval = new ArrayList<>();
+
+	private boolean pendingDestination = false;
+	private Location lastKnownLocation;
+	private int pendingTime = 0;
+
+	public ScriptExecutor(World world, StagedScript script) {
+		this.script = script;
+		this.entity = script.getEntityType().newEntity(world);
+
+		addStartingPoint();
+		addScriptActions();
+		((CraftWorld) world).getHandle().addEntity(entity.getEntity());
+	}
+
+	public void runScript() {
+		runTaskTimer(StagePlay.getInstance(), 20, 20); // 1 second intervals
+	}
+
+	@Override
+	public void run() {
+		if (!stages.containsKey(stageIndex)) {
+			cancel();
+			return;
+		}
+
+		Map<StageActions, StageComponent> actions = stages.get(stageIndex);
+		if (actions == null) {
+			throw new IllegalStateException("A script was executed with no applicable actions or stages");
+		}
+
+		// Prevents script from continuing until the entity is no longer in transit, preventing overlapping actions
+		if (pendingDestination) {
+			if (lastKnownLocation != null && entity.getCurrentLocation().distance(lastKnownLocation) == 0) {
+				pendingDestination = false;
+			} else {
+				lastKnownLocation = entity.getCurrentLocation();
+				return;
 			}
 		}
 
-		// Spawn the entity after actions are added for safety
-		((CraftWorld) world).getHandle().addEntity(scriptedEntity.getEntity());
+		// Triggered on the WAIT action
+		if (pendingTime > 0) {
+			pendingTime--;
+			actions.remove(StageActions.WAIT); // The wait action has been enacted, don't repeat
+			return;
+		}
+
+		actionsPendingRemoval.clear();
+		for (StageActions action : actions.keySet()) {
+			switch (action) {
+				case START: {
+					break;
+				}
+				case WALK_TO: {
+					Location location = getLocationFromGenericComponent(actions.get(action));
+					if (!pendingDestination) {
+						NavigationAbstract navigation = entity.getEntity().getNavigation();
+						PathEntity pathEntity = navigation.a(location.getX(), location.getY(), location.getZ());
+						navigation.a(pathEntity, 0.8);
+						pendingDestination = true; // The entity is now in transit
+					}
+					break;
+				}
+				case TALK:
+					speak(actions.get(action), false);
+					break;
+				case SHOUT:
+					speak(actions.get(action), true);
+					break;
+				case WAIT:
+					IntegerComponent component = (IntegerComponent) actions.get(action);
+					pendingTime += component.getValue();
+					return;
+				default:
+					throw new IllegalStateException("Attempt to execute unrecognised action");
+			}
+			// This helps to prevent repeating actions
+			actionsPendingRemoval.add(action);
+		}
+
+		for (StageActions removeAction : actionsPendingRemoval) {
+			stages.get(stageIndex).remove(removeAction);
+		}
+
+		stageIndex++;
 	}
 
-	private static Location getLocationFromGenericComponent(StageComponent component) {
+	private void addStartingPoint() {
+		Map<StageActions, StageComponent> firstStageActions = script.getActionsForStage(1);
+		if (!firstStageActions.containsKey(StageActions.START)) {
+			throw new RuntimeException("Attempt to execute script with no START action");
+		}
+
+		LocationComponent component = (LocationComponent) firstStageActions.get(StageActions.START);
+		entity.setLocation(component.getValue());
+	}
+
+	private void addScriptActions() {
+		for (int i = 1; i <= script.getAmountOfStages(); i++) {
+			// As the actions will get removed in processing, we need a new map so the script is not edited
+			LinkedHashMap<StageActions, StageComponent> newActionsMap = new LinkedHashMap<>(
+					script.getActionsForStage(i));
+			stages.put(i, newActionsMap);
+		}
+	}
+
+	private Location getLocationFromGenericComponent(StageComponent component) {
 		return ((LocationComponent) component).getValue();
 	}
 
-	private static void addSpeakPathfinder(ScriptedEntity scriptedEntity, StageComponent component,
-			boolean isShouting) {
+	private void speak(StageComponent component, boolean isShouting) {
 		String text = ((StringComponent) component).getValue();
-		scriptedEntity.addGoalAction(
-				new PathfinderGoalSpeak(scriptedEntity.getEntity(), scriptedEntity.getCurrentLocation(),
-						text, isShouting));
+		Bukkit.getOnlinePlayers().forEach(player -> {
+			// Shouting is to all players, talking (the opposite) is only to players within 15 blocks
+			if (isShouting || entity.getCurrentLocation().distance(player.getLocation()) <= 15) {
+				player.sendMessage(
+						ChatColor.YELLOW + script.getEntityName() + ChatColor.DARK_GRAY + FurCore.ARROWS + " "
+								+ ChatColor.GRAY + text);
+			}
+		});
 	}
 
 }

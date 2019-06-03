@@ -9,6 +9,7 @@ import app.ashcon.intake.bukkit.parametric.annotation.Sender;
 import app.ashcon.intake.group.At;
 import app.ashcon.intake.group.Group;
 import app.ashcon.intake.parametric.annotation.Text;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 import uk.co.harieo.FurBridge.rank.Rank;
@@ -17,7 +18,6 @@ import uk.co.harieo.StagePlay.commands.ScriptCommand;
 import uk.co.harieo.StagePlay.components.DefinedComponents;
 import uk.co.harieo.StagePlay.components.StageComponent;
 import uk.co.harieo.StagePlay.components.types.*;
-import uk.co.harieo.StagePlay.components.types.FaceDirectionComponent.Facing;
 import uk.co.harieo.StagePlay.scripts.ScriptLoader;
 import uk.co.harieo.StagePlay.scripts.StageActions;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
@@ -51,10 +51,6 @@ public class ScriptActionCommands {
 			LocationComponent locationComponent = definedComponent.createComponent();
 			locationComponent.setValue(location);
 			component = locationComponent;
-		} else if (definedComponent.equals(DefinedComponents.FACING)) {
-			FaceDirectionComponent facingComponent = definedComponent.createComponent();
-			facingComponent.setValue(new Facing(location.getYaw(), location.getPitch()));
-			component = facingComponent;
 		} else if (definedComponent.equals(DefinedComponents.DISTANCE)) {
 			double distance;
 			try {
@@ -70,7 +66,11 @@ public class ScriptActionCommands {
 		} else if (definedComponent.equals(DefinedComponents.SECONDS)) {
 			int seconds;
 			try {
-				seconds = Integer.parseInt(argument);
+				seconds = Integer.parseInt(argument.trim());
+				if (seconds < 1) {
+					sender.sendMessage(ChatColor.RED + "You cannot specify 0 seconds as the action would be redundant");
+					return;
+				}
 			} catch (NumberFormatException ignored) {
 				sender.sendMessage(ChatColor.RED + "This amount of seconds is invalid or not whole: " + argument);
 				return;
@@ -119,7 +119,7 @@ public class ScriptActionCommands {
 			return;
 		}
 
-		Map<Integer, Map<StageActions, StageComponent>> stages = script.getAllActions();
+		Map<Integer, LinkedHashMap<StageActions, StageComponent>> stages = script.getAllActions();
 
 		sender.sendMessage(ChatColor.GRAY + "Your Script: " + ChatColor.GREEN + script.getScriptName());
 		sender.sendMessage(

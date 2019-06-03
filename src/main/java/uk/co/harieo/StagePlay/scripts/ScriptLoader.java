@@ -118,11 +118,6 @@ public class ScriptLoader {
 				doubleComponent.setValue(doubleComponent.parseElement(serializedComponent));
 				component = doubleComponent;
 				break;
-			case FACING:
-				FaceDirectionComponent faceComponent = new FaceDirectionComponent();
-				faceComponent.setValue(faceComponent.parseElement(serializedComponent));
-				component = faceComponent;
-				break;
 			case LOCATION:
 				LocationComponent locationComponent = new LocationComponent();
 				locationComponent.setValue(locationComponent.parseElement(serializedComponent));
