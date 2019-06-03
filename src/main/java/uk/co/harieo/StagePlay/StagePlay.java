@@ -17,6 +17,7 @@ import uk.co.harieo.StagePlay.commands.subcommands.ScriptActionCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptExecutionCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptHelpCommands;
+import uk.co.harieo.StagePlay.events.EntityDamageListener;
 
 public class StagePlay extends JavaPlugin {
 
@@ -28,6 +29,7 @@ public class StagePlay extends JavaPlugin {
 
 		injectModules(new StageActionModule(), new StageEntityModule());
 		registerCommands(new ScriptCommand(), new ScriptActionCommands(), new ScriptEditingCommands(), new ScriptExecutionCommands(), new ScriptHelpCommands());
+		registerListeners(new EntityDamageListener());
 	}
 
 	private void registerListeners(Listener... listeners) {

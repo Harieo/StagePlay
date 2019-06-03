@@ -7,11 +7,13 @@ import app.ashcon.intake.Command;
 import app.ashcon.intake.bukkit.parametric.annotation.Sender;
 import app.ashcon.intake.group.At;
 import app.ashcon.intake.group.Group;
+import app.ashcon.intake.parametric.annotation.Default;
 import app.ashcon.intake.parametric.annotation.Text;
 import java.util.*;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
+import uk.co.harieo.StagePlay.entities.ScriptedEntity;
 import uk.co.harieo.StagePlay.entities.StageableEntity;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
 
@@ -77,6 +79,19 @@ public class ScriptCommand {
 		}
 
 		ScriptEditingCommands.cancelledScript(sender);
+	}
+
+	@Group(@At("script"))
+	@Command(aliases = {"clean", "cleanentities", "clearentities"},
+			 desc = "Clear all scripted entities with no use")
+	public void clearEntities(@Sender Player sender, @Default("10") double distance) {
+		if (!RankCache.getCachedInfo(sender).hasPermission(Rank.MODERATOR)) {
+			sender.sendMessage(ChatColor.RED + "You must be a Moderator or above to use scripts");
+			return;
+		}
+
+		ScriptedEntity.destroyNearbyEntities(sender, distance);
+		sender.sendMessage(ChatColor.GREEN + "All nearby scripted entities have been destroyed");
 	}
 
 }
