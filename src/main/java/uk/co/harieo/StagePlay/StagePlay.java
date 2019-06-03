@@ -17,7 +17,8 @@ import uk.co.harieo.StagePlay.commands.subcommands.ScriptActionCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptExecutionCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptHelpCommands;
-import uk.co.harieo.StagePlay.events.EntityDamageListener;
+import uk.co.harieo.StagePlay.entities.ScriptedEntity;
+import uk.co.harieo.StagePlay.events.ScriptedEntityListener;
 
 public class StagePlay extends JavaPlugin {
 
@@ -29,7 +30,14 @@ public class StagePlay extends JavaPlugin {
 
 		injectModules(new StageActionModule(), new StageEntityModule());
 		registerCommands(new ScriptCommand(), new ScriptActionCommands(), new ScriptEditingCommands(), new ScriptExecutionCommands(), new ScriptHelpCommands());
-		registerListeners(new EntityDamageListener());
+		registerListeners(new ScriptedEntityListener());
+	}
+
+	@Override
+	public void onDisable() {
+		getLogger().info("Cleaning up all scripted entities...");
+		ScriptedEntity.destroyAllEntities();
+		getLogger().info("Cleaned all entities successfully");
 	}
 
 	private void registerListeners(Listener... listeners) {

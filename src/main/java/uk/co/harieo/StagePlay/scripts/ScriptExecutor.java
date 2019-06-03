@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -16,6 +17,7 @@ import uk.co.harieo.StagePlay.components.types.IntegerComponent;
 import uk.co.harieo.StagePlay.components.types.LocationComponent;
 import uk.co.harieo.StagePlay.components.types.StringComponent;
 import uk.co.harieo.StagePlay.entities.ScriptedEntity;
+import uk.co.harieo.StagePlay.events.ScriptExecuteEvent;
 
 public class ScriptExecutor extends BukkitRunnable {
 
@@ -45,16 +47,14 @@ public class ScriptExecutor extends BukkitRunnable {
 	/**
 	 * Runs the script with default timing (1 action per second)
 	 */
-	public void runScript() {
+	public void playerRunScript(Player player) {
 		runTaskTimer(StagePlay.getInstance(), 20, 20); // 1 second intervals
+		Bukkit.getPluginManager().callEvent(new ScriptExecuteEvent(this, entity, script, player));
 	}
 
 	@Override
 	public void run() {
-		if (!stages.containsKey(stageIndex)) { // The script has nothing left to execute and pending actions are resolved
-			cancel();
-			return;
-		} else if (!entity.getEntity().isAlive()) {
+		if (!stages.containsKey(stageIndex) || !entity.getEntity().isAlive()) { // The script has nothing left to execute and pending actions are resolved
 			cancel();
 			return;
 		}

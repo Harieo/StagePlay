@@ -51,7 +51,7 @@ public class ScriptExecutionCommands {
 			sender.sendMessage(ChatColor.RED + "You must be a Moderator or above to use scripts");
 		} else if (ScriptLoader.isScriptLoaded(scriptName)) {
 			World world = sender.getWorld();
-			new ScriptExecutor(world, ScriptLoader.getScript(scriptName)).runScript();
+			new ScriptExecutor(world, ScriptLoader.getScript(scriptName)).playerRunScript(sender);
 			sender.sendMessage(
 					ChatColor.GRAY + "Executing script " + ChatColor.YELLOW + scriptName + ChatColor.GRAY + " in world "
 							+ ChatColor.GREEN + world.getName());
@@ -81,7 +81,7 @@ public class ScriptExecutionCommands {
 			return;
 		}
 
-		new ScriptExecutor(sender.getWorld(), script).runScript();
+		new ScriptExecutor(sender.getWorld(), script).playerRunScript(sender);
 	}
 
 }

@@ -128,6 +128,15 @@ public class ScriptedEntity<T extends EntityInsentient> {
 	}
 
 	/**
+	 * Destroys all spawned scripted entities
+	 */
+	public static void destroyAllEntities() {
+		for (ScriptedEntity entity : spawnedEntities) {
+			entity.destroyEntity();
+		}
+	}
+
+	/**
 	 * Deletes entities from the cache to indicate it is no longer controlled (does not destroy the entity)
 	 *
 	 * @param entityInsentient to remove from the cache
