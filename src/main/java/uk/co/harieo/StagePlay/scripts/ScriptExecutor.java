@@ -33,6 +33,12 @@ public class ScriptExecutor extends BukkitRunnable {
 	private int pendingTime = 0;
 	private boolean finalPendingTime = false;
 
+	/**
+	 * A runnable which executes a linear set of actions from a loaded {@link StagedScript}
+	 *
+	 * @param world to execute the script in
+	 * @param script that will be executed
+	 */
 	public ScriptExecutor(World world, StagedScript script) {
 		this.script = script;
 		// Translating color codes here benefits simulations that aren't final
@@ -45,7 +51,9 @@ public class ScriptExecutor extends BukkitRunnable {
 	}
 
 	/**
-	 * Runs the script with default timing (1 action per second)
+	 * Runs the script with default timing (1 action per second) and calls the {@link ScriptExecuteEvent}
+	 *
+	 * @param player the player that executed the script
 	 */
 	public void playerRunScript(Player player) {
 		runTaskTimer(StagePlay.getInstance(), 20, 20); // 1 second intervals
@@ -123,7 +131,7 @@ public class ScriptExecutor extends BukkitRunnable {
 		}
 
 		for (StageAction removeAction : actionsPendingRemoval) {
-			stages.get(stageIndex).remove(removeAction);
+			stages.get(stageIndex).remove(removeAction); // Removing the action prevents it being repeated
 		}
 
 		stageIndex++;

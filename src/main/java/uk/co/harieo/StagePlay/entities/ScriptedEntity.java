@@ -13,7 +13,7 @@ import uk.co.harieo.StagePlay.utils.Utils;
 
 public class ScriptedEntity<T extends EntityInsentient> {
 
-	public static List<ScriptedEntity> spawnedEntities = new ArrayList<>();
+	private static List<ScriptedEntity> spawnedEntities = new ArrayList<>();
 
 	private T entity;
 	private PathfinderGoalSelector goalSelector;
@@ -23,6 +23,13 @@ public class ScriptedEntity<T extends EntityInsentient> {
 	private World spawnWorld;
 	private int actionIndex = 0;
 
+	/**
+	 * A custom NMS entity which can be manipulated and controlled by a {@link uk.co.harieo.StagePlay.scripts.StagedScript}
+	 *
+	 * @param clazz instance of {@link EntityInsentient} which represents the entity type
+	 * @param world that the entity will be spawned into
+	 * @param customName for the entity
+	 */
 	@SuppressWarnings("unchecked")
 	ScriptedEntity(Class<T> clazz, World world, String customName) {
 		try {
@@ -56,43 +63,42 @@ public class ScriptedEntity<T extends EntityInsentient> {
 		spawnedEntities.add(this);
 	}
 
-	public PathfinderGoalSelector getGoalSelector() {
-		return goalSelector;
-	}
-
-	public PathfinderGoalSelector getTargetSelector() {
-		return targetSelector;
-	}
-
+	/**
+	 * Sets the location of this entity before it is spawned
+	 *
+	 * @param location to set the entity to
+	 */
 	public void setLocation(Location location) {
 		entity.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(),
 				location.getPitch());
 		this.location = location;
 	}
 
+	/**
+	 * @return a {@link Location} representation of the entity's X, Y and Z positions in the world
+	 */
 	public Location getCurrentLocation() {
 		return new Location(spawnWorld, entity.locX, entity.locY, entity.locZ);
 	}
 
+	/**
+	 * @return whether a location is stored for this entity
+	 */
 	public boolean isLocated() {
 		return location != null;
 	}
 
-	public void addGoalAction(PathfinderGoal goal) {
-		goalSelector.a(actionIndex, goal);
-		actionIndex++;
-	}
-
-	public void addTargetAction(PathfinderGoal goal) {
-		targetSelector.a(actionIndex, goal);
-		actionIndex++;
-	}
-
+	/**
+	 * Destroys this entity, removing it from the world entirely
+	 */
 	public void destroyEntity() {
 		entity.die();
-		spawnedEntities.remove(entity);
+		spawnedEntities.remove(this);
 	}
 
+	/**
+	 * @return the instantiated instance of this {@link EntityInsentient}
+	 */
 	public T getEntity() {
 		return entity;
 	}

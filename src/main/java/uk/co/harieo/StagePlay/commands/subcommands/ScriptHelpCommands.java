@@ -110,12 +110,24 @@ public class ScriptHelpCommands {
 		}
 	}
 
+	/**
+	 * Send a message with a blank message before and after it
+	 *
+	 * @param player to send the title to
+	 * @param titleText to put as the main message
+	 */
 	private void sendTitle(Player player, String titleText) {
 		player.sendMessage("");
 		player.sendMessage(titleText);
 		player.sendMessage("");
 	}
 
+	/**
+	 * Takes a {@link DefinedComponent} and represents its example as a more user-friendly string
+	 *
+	 * @param component to take the example of
+	 * @return a user-friendly version of the example text
+	 */
 	private String formatComponentExample(DefinedComponent component) {
 		return ChatColor.GRAY + "An example of a " + ChatColor.LIGHT_PURPLE + component.getName() + " Component "
 				+ ChatColor.GRAY + "would be " + ChatColor.YELLOW + component.getExample();
@@ -139,31 +151,51 @@ public class ScriptHelpCommands {
 		VALIDATE_SCRIPT("validate", null, "Get a report of any errors/warnings from your current script"),
 		LOAD_SCRIPT("load", "<script-name>", "Load a script from a file in the plugin folder"),
 		EXECUTE_SCRIPT("execute", "<script-name>", "Run a script that has been loaded via /script load"),
-		SIMULATE_SCRIPT("simulate", null, "Run a script that you are editing without saving it");
+		SIMULATE_SCRIPT("simulate", null, "Run a script that you are editing without saving it"),
+		CLEAN("clean", "[distance]", "Cleans all scripted entities in a certain distance of you");
 
 		private String subCommand;
 		private String arguments;
 		private String description;
 
+		/**
+		 * A representation of a sub-command of this plugin with arguments and a brief description
+		 *
+		 * @param subCommand to be used after /script
+		 * @param arguments that are needed for the command
+		 * @param description to describe what the sub-command does
+		 */
 		CommandDescription(String subCommand, @Nullable String arguments, String description) {
 			this.subCommand = subCommand;
 			this.arguments = arguments;
 			this.description = description;
 		}
 
+		/**
+		 * @return a string representation of this sub-command
+		 */
 		public String getSubCommand() {
 			return subCommand;
 		}
 
+		/**
+		 * @return a string representation of the arguments needed for this sub-command
+		 */
 		@Nullable
 		public String getArguments() {
 			return arguments;
 		}
 
+		/**
+		 * @return a brief description of this command
+		 */
 		public String getDescription() {
 			return description;
 		}
 
+		/**
+		 * @return whether any arguments are needed for this sub-command
+		 */
 		public boolean hasArguments() {
 			return arguments != null;
 		}

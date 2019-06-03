@@ -28,7 +28,6 @@ public class StagePlay extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		injectModules(new StageActionModule(), new StageEntityModule());
 		registerCommands(new ScriptCommand(), new ScriptActionCommands(), new ScriptEditingCommands(), new ScriptExecutionCommands(), new ScriptHelpCommands());
 		registerListeners(new ScriptedEntityListener());
 	}
@@ -40,15 +39,13 @@ public class StagePlay extends JavaPlugin {
 		getLogger().info("Cleaned all entities successfully");
 	}
 
+	/**
+	 * Registers the plugin listeners
+	 *
+	 * @param listeners to be registered
+	 */
 	private void registerListeners(Listener... listeners) {
 		Arrays.stream(listeners).forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
-	}
-
-	private void injectModules(AbstractModule... modules) {
-		Injector injector = Intake.createInjector();
-		for (AbstractModule module : modules) {
-			injector.install(module);
-		}
 	}
 
 	/**

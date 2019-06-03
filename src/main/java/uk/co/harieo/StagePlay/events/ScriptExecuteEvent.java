@@ -15,6 +15,14 @@ public class ScriptExecuteEvent extends Event {
 	private StagedScript script;
 	private Player player;
 
+	/**
+	 * An event which indicates a {@link StagedScript} has been started via the {@link ScriptExecutor}
+	 *
+	 * @param executor that is running the script
+	 * @param entity that the script is controlling
+	 * @param script which actions are being executed from
+	 * @param player who executed the script
+	 */
 	public ScriptExecuteEvent(ScriptExecutor executor, ScriptedEntity entity, StagedScript script, Player player) {
 		this.scriptExecutor = executor;
 		this.entity = entity;

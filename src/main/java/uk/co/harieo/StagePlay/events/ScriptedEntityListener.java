@@ -17,6 +17,9 @@ import uk.co.harieo.StagePlay.scripts.StagedScript;
 
 public class ScriptedEntityListener implements Listener {
 
+	/**
+	 * Prevents any scripted entity from being damaged
+	 */
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
 		Entity entity = ((CraftEntity) event.getEntity()).getHandle();
@@ -25,6 +28,10 @@ public class ScriptedEntityListener implements Listener {
 		}
 	}
 
+	/**
+	 * In the event a scripted entity is killed by an unnatural source, remove it from the list of living scripted
+	 * entities
+	 */
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
 		Entity entity = ((CraftEntity) event.getEntity()).getHandle();
@@ -36,6 +43,9 @@ public class ScriptedEntityListener implements Listener {
 		}
 	}
 
+	/**
+	 * Sends a message to all administrators when a script has been executed
+	 */
 	@EventHandler
 	public void onScriptExecute(ScriptExecuteEvent event) {
 		StagedScript script = event.getScript();

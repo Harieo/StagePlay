@@ -25,6 +25,9 @@ import uk.co.harieo.StagePlay.utils.Utils;
 
 public class ScriptActionCommands {
 
+	/**
+	 * Takes an action, forms a component and adds it to the {@link StagedScript} that the sender is editing
+	 */
 	@Group(@At("script"))
 	@Command(aliases = {"add", "action", "addaction"},
 			 desc = "Add an action to the entity")

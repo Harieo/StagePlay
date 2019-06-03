@@ -144,7 +144,7 @@ public class StagedScript {
 	/**
 	 * Code to detect erroneous values in the current script in the event that an unknown error is persisting
 	 *
-	 * @return whether the script is valid or not
+	 * @return whether the script is safe to be executed or not
 	 */
 	public ReportResult validateStages() {
 		ReportResult report = new ReportResult(scriptName + " Script Report");
@@ -280,6 +280,9 @@ public class StagedScript {
 		return stagesOfActions;
 	}
 
+	/**
+	 * Removes the newest added stage from the script
+	 */
 	public void removeLatestStage() {
 		amountOfStages--;
 		stage = amountOfStages; // Prevent editing a removed stage

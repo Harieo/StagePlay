@@ -6,12 +6,9 @@ import net.minecraft.server.v1_12_R1.*;
 
 public enum StageableEntity {
 
-	// TODO: Add more version-specific entities
-
 	ZOMBIE(EntityZombie.class),
 	VILLAGER(EntityVillager.class),
-	SPIDER(EntitySpider.class),
-	SLIME(EntitySlime.class);
+	SPIDER(EntitySpider.class);
 
 	private Class<? extends EntityInsentient> clazz;
 
