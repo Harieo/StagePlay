@@ -7,7 +7,14 @@ import net.minecraft.server.v1_12_R1.*;
 public enum StageableEntity {
 
 	ZOMBIE(EntityZombie.class),
+	ZOMBIE_PIGMAN(EntityPigZombie.class),
 	VILLAGER(EntityVillager.class),
+	SKELETON(EntitySkeleton.class),
+	CREEPER(EntityCreeper.class),
+	PIG(EntityPig.class),
+	SHEEP(EntitySheep.class),
+	WOLF(EntityWolf.class),
+	WITCH(EntityWitch.class),
 	SPIDER(EntitySpider.class);
 
 	private Class<? extends EntityInsentient> clazz;

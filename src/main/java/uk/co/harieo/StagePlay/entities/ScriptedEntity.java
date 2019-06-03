@@ -126,20 +126,23 @@ public class ScriptedEntity<T extends EntityInsentient> {
 	 * @param distance from the player to be destroyed
 	 */
 	public static void destroyNearbyEntities(Player player, double distance) {
+		// Prevents concurrent modification
+		List<ScriptedEntity> toBeDestroyed = new ArrayList<>();
 		for (ScriptedEntity entity : spawnedEntities) {
 			if (entity.getCurrentLocation().distance(player.getLocation()) <= distance) {
-				entity.destroyEntity();
+				toBeDestroyed.add(entity);
 			}
 		}
+		toBeDestroyed.forEach(ScriptedEntity::destroyEntity);
 	}
 
 	/**
 	 * Destroys all spawned scripted entities
 	 */
 	public static void destroyAllEntities() {
-		for (ScriptedEntity entity : spawnedEntities) {
-			entity.destroyEntity();
-		}
+		// Prevents concurrent modification
+		List<ScriptedEntity> toBeDestroyed = new ArrayList<>(spawnedEntities);
+		toBeDestroyed.forEach(ScriptedEntity::destroyEntity);
 	}
 
 	/**
@@ -148,11 +151,14 @@ public class ScriptedEntity<T extends EntityInsentient> {
 	 * @param entityInsentient to remove from the cache
 	 */
 	public static void purgeEntity(EntityInsentient entityInsentient) {
+		// Prevents concurrent modification
+		List<ScriptedEntity> toBeRemoved = new ArrayList<>();
 		for (ScriptedEntity scriptedEntity : spawnedEntities) {
 			if (scriptedEntity.getEntity().equals(entityInsentient)) {
-				spawnedEntities.remove(scriptedEntity);
+				toBeRemoved.add(scriptedEntity);
 			}
 		}
+		toBeRemoved.forEach(entity -> spawnedEntities.remove(entity));
 	}
 
 }

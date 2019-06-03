@@ -62,7 +62,8 @@ public class ScriptExecutor extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		if (!stages.containsKey(stageIndex) || !entity.getEntity().isAlive()) { // The script has nothing left to execute and pending actions are resolved
+		if (!stages.containsKey(stageIndex) || !entity.getEntity()
+				.isAlive()) { // The script has nothing left to execute and pending actions are resolved
 			cancel();
 			return;
 		}
@@ -164,8 +165,8 @@ public class ScriptExecutor extends BukkitRunnable {
 	}
 
 	/**
-	 * Adds more time to the {@link #pendingTime} field and sets {@link #finalPendingTime} to true which will destroy the
-	 * entity when the time runs out, if specified.
+	 * Adds more time to the {@link #pendingTime} field and sets {@link #finalPendingTime} to true which will destroy
+	 * the entity when the time runs out, if specified.
 	 *
 	 * @param component which is an instance of {@link IntegerComponent} and contains the time to add
 	 * @param isToStop whether or not this is a countdown to stop the script or not
@@ -177,7 +178,8 @@ public class ScriptExecutor extends BukkitRunnable {
 	}
 
 	/**
-	 * Converts a {@link StageComponent} into a {@link LocationComponent} and returns the value of the {@link LocationComponent}
+	 * Converts a {@link StageComponent} into a {@link LocationComponent} and returns the value of the {@link
+	 * LocationComponent}
 	 *
 	 * @param component which is an instance of {@link LocationComponent}
 	 * @return the value of the casted {@link LocationComponent}
@@ -198,7 +200,8 @@ public class ScriptExecutor extends BukkitRunnable {
 			// Shouting is to all players, talking (the opposite) is only to players within 15 blocks
 			if (isShouting || entity.getCurrentLocation().distance(player.getLocation()) <= 15) {
 				player.sendMessage(
-						ChatColor.YELLOW + script.getEntityName() + ChatColor.DARK_GRAY + " " + FurCore.ARROWS + " "
+						ChatColor.YELLOW + ChatColor.translateAlternateColorCodes('&', script.getEntityName())
+								+ ChatColor.DARK_GRAY + " " + FurCore.ARROWS + " "
 								+ ChatColor.GRAY + text);
 			}
 		});
