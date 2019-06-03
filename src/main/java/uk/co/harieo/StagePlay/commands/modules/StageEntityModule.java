@@ -11,16 +11,16 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import uk.co.harieo.StagePlay.entities.StageableEntities;
+import uk.co.harieo.StagePlay.entities.StageableEntity;
 
 public class StageEntityModule extends AbstractModule {
 
 	@Override
 	public void configure() {
-		bind(StageableEntities.class).toProvider(new EntityProvider());
+		bind(StageableEntity.class).toProvider(new EntityProvider());
 	}
 
-	private static class EntityProvider implements Provider<StageableEntities> {
+	private static class EntityProvider implements Provider<StageableEntity> {
 
 		@Override
 		public String getName() {
@@ -29,12 +29,12 @@ public class StageEntityModule extends AbstractModule {
 
 		@Nullable
 		@Override
-		public StageableEntities get(CommandArgs args, List<? extends Annotation> mods)
+		public StageableEntity get(CommandArgs args, List<? extends Annotation> mods)
 				throws ArgumentException, ProvisionException {
 			String rawEntityType = args.next();
 
-			StageableEntities entity = null;
-			for (StageableEntities entityType : StageableEntities.values()) {
+			StageableEntity entity = null;
+			for (StageableEntity entityType : StageableEntity.values()) {
 				if (entityType.name().equalsIgnoreCase(rawEntityType.toLowerCase())) {
 					entity = entityType;
 				}
@@ -50,7 +50,7 @@ public class StageEntityModule extends AbstractModule {
 		@Override
 		public List<String> getSuggestions(String prefix, Namespace namespace, List<? extends Annotation> modifiers) {
 			List<String> typeNames = new ArrayList<>();
-			for (StageableEntities entityType : StageableEntities.values()) {
+			for (StageableEntity entityType : StageableEntity.values()) {
 				if (entityType.name().startsWith(prefix)) {
 					typeNames.add(entityType.name());
 				}

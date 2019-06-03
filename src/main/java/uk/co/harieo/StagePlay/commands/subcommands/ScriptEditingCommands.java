@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import uk.co.harieo.StagePlay.commands.ScriptCommand;
-import uk.co.harieo.StagePlay.entities.StageableEntities;
+import uk.co.harieo.StagePlay.entities.StageableEntity;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
 import uk.co.harieo.StagePlay.utils.ReportResult;
 
@@ -38,7 +38,7 @@ public class ScriptEditingCommands {
 	@Group(@At("script"))
 	@Command(aliases = {"entity", "entitytype"},
 			 desc = "Changes the type of entity that this script will load")
-	public void changeEntityType(@Sender Player sender, StageableEntities newEntityType) {
+	public void changeEntityType(@Sender Player sender, StageableEntity newEntityType) {
 		if (!ScriptCommand.isEditingScript(sender)) {
 			sender.sendMessage(ChatColor.RED + "You are not editing a script, use /script create");
 			return;

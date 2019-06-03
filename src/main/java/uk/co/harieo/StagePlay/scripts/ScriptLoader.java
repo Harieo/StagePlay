@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import uk.co.harieo.StagePlay.StagePlay;
 import uk.co.harieo.StagePlay.components.StageComponent;
 import uk.co.harieo.StagePlay.components.types.*;
-import uk.co.harieo.StagePlay.entities.StageableEntities;
+import uk.co.harieo.StagePlay.entities.StageableEntity;
 
 public class ScriptLoader {
 
@@ -42,7 +42,7 @@ public class ScriptLoader {
 			JsonObject fullScript = parser.parse(reader).getAsJsonObject();
 
 			String entityName;
-			StageableEntities entityType;
+			StageableEntity entityType;
 			int amountOfStages;
 			JsonObject stagesObject;
 			if (fullScript.has("entityName")
@@ -50,7 +50,7 @@ public class ScriptLoader {
 					&& fullScript.has("amountOfStages")
 					&& fullScript.has("stages")) {
 				entityName = fullScript.get("entityName").getAsString();
-				entityType = StageableEntities.valueOf(fullScript.get("entityType").getAsString());
+				entityType = StageableEntity.valueOf(fullScript.get("entityType").getAsString());
 				amountOfStages = fullScript.get("amountOfStages").getAsInt();
 				stagesObject = fullScript.getAsJsonObject("stages");
 			} else {

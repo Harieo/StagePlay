@@ -12,7 +12,7 @@ import java.util.*;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
-import uk.co.harieo.StagePlay.entities.StageableEntities;
+import uk.co.harieo.StagePlay.entities.StageableEntity;
 import uk.co.harieo.StagePlay.scripts.StagedScript;
 
 public class ScriptCommand {
@@ -52,7 +52,7 @@ public class ScriptCommand {
 	@Command(aliases = {"create", "new"},
 			 desc = "Creates a new script",
 			 usage = "[create/new]")
-	public void createScript(@Sender Player sender, String scriptName, StageableEntities entityType,
+	public void createScript(@Sender Player sender, String scriptName, StageableEntity entityType,
 			@Text String entityName) {
 		if (!RankCache.getCachedInfo(sender).hasPermission(Rank.MODERATOR)) {
 			sender.sendMessage(ChatColor.RED + "You must be a Moderator or above to use scripts");

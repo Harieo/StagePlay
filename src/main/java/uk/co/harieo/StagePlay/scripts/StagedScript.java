@@ -1,7 +1,6 @@
 package uk.co.harieo.StagePlay.scripts;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import com.google.gson.JsonObject;
 import java.io.File;
@@ -15,7 +14,7 @@ import java.util.Map;
 import uk.co.harieo.StagePlay.StagePlay;
 import uk.co.harieo.StagePlay.components.StageComponent;
 import uk.co.harieo.StagePlay.components.types.LocationComponent;
-import uk.co.harieo.StagePlay.entities.StageableEntities;
+import uk.co.harieo.StagePlay.entities.StageableEntity;
 import uk.co.harieo.StagePlay.utils.ReportResult;
 import uk.co.harieo.StagePlay.utils.ReportResult.ResultType;
 
@@ -23,7 +22,7 @@ public class StagedScript {
 
 	private String scriptName; // This name will identify the saved file, if any
 	private String entityName; // The name of the entity when spawned
-	private StageableEntities entityType; // The will identify which type of entity to spawn on load
+	private StageableEntity entityType; // The will identify which type of entity to spawn on load
 	private int amountOfStages = 0; // Total of stages
 	private int stage = 0; // Current stage to add actions to
 
@@ -39,7 +38,7 @@ public class StagedScript {
 	 *
 	 * @param scriptName to identify the script after it is finalized
 	 */
-	public StagedScript(String scriptName, StageableEntities entityType, String entityName) {
+	public StagedScript(String scriptName, StageableEntity entityType, String entityName) {
 		this.scriptName = scriptName;
 		this.entityName = entityName;
 		this.entityType = entityType;
@@ -82,7 +81,7 @@ public class StagedScript {
 	/**
 	 * @return the type of entity this script will be used on
 	 */
-	public StageableEntities getEntityType() {
+	public StageableEntity getEntityType() {
 		return entityType;
 	}
 
@@ -91,7 +90,7 @@ public class StagedScript {
 	 *
 	 * @param entityType to set the entity type to
 	 */
-	public void setEntityType(StageableEntities entityType) {
+	public void setEntityType(StageableEntity entityType) {
 		this.entityType = entityType;
 	}
 

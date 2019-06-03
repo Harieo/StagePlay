@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import uk.co.harieo.FurBridge.rank.Rank;
 import uk.co.harieo.FurCore.ranks.RankCache;
 import uk.co.harieo.StagePlay.commands.ScriptCommand;
-import uk.co.harieo.StagePlay.components.DefinedComponents;
+import uk.co.harieo.StagePlay.components.DefinedComponent;
 import uk.co.harieo.StagePlay.components.StageComponent;
 import uk.co.harieo.StagePlay.components.types.*;
 import uk.co.harieo.StagePlay.scripts.ScriptLoader;
@@ -34,7 +34,7 @@ public class ScriptActionCommands {
 			return;
 		}
 
-		DefinedComponents definedComponent = action.getComponent();
+		DefinedComponent definedComponent = action.getComponent();
 		StagedScript script = ScriptCommand.getScript(sender);
 		Location location = sender.getLocation();
 
@@ -47,11 +47,11 @@ public class ScriptActionCommands {
 			sender.sendMessage(ChatColor.YELLOW + definedComponent.getName() + ChatColor.GRAY + " - " + definedComponent
 					.getDescription());
 			return;
-		} else if (definedComponent.equals(DefinedComponents.LOCATION)) {
+		} else if (definedComponent.equals(DefinedComponent.LOCATION)) {
 			LocationComponent locationComponent = definedComponent.createComponent();
 			locationComponent.setValue(location);
 			component = locationComponent;
-		} else if (definedComponent.equals(DefinedComponents.DISTANCE)) {
+		} else if (definedComponent.equals(DefinedComponent.DISTANCE)) {
 			double distance;
 			try {
 				distance = Double.parseDouble(argument);
@@ -63,7 +63,7 @@ public class ScriptActionCommands {
 			DoubleComponent doubleComponent = definedComponent.createComponent();
 			doubleComponent.setValue(distance);
 			component = doubleComponent;
-		} else if (definedComponent.equals(DefinedComponents.SECONDS)) {
+		} else if (definedComponent.equals(DefinedComponent.SECONDS)) {
 			int seconds;
 			try {
 				seconds = Integer.parseInt(argument.trim());
@@ -79,7 +79,7 @@ public class ScriptActionCommands {
 			IntegerComponent integerComponent = definedComponent.createComponent();
 			integerComponent.setValue(seconds);
 			component = integerComponent;
-		} else if (definedComponent.equals(DefinedComponents.TEXT)) {
+		} else if (definedComponent.equals(DefinedComponent.TEXT)) {
 			StringComponent stringComponent = definedComponent.createComponent();
 			stringComponent.setValue(argument);
 			component = stringComponent;

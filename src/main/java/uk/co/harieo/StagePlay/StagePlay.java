@@ -11,6 +11,7 @@ import app.ashcon.intake.parametric.Injector;
 import java.util.Arrays;
 import uk.co.harieo.StagePlay.commands.ScriptCommand;
 import uk.co.harieo.StagePlay.commands.modules.StageActionModule;
+import uk.co.harieo.StagePlay.commands.modules.StageDefinedComponentModule;
 import uk.co.harieo.StagePlay.commands.modules.StageEntityModule;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptActionCommands;
 import uk.co.harieo.StagePlay.commands.subcommands.ScriptEditingCommands;
@@ -49,6 +50,7 @@ public class StagePlay extends JavaPlugin {
 		// Bind modules
 		injector.install(new StageActionModule());
 		injector.install(new StageEntityModule());
+		injector.install(new StageDefinedComponentModule());
 		new BukkitIntake(this, injector, commands);
 	}
 

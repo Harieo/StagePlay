@@ -4,7 +4,7 @@ import org.bukkit.World;
 
 import net.minecraft.server.v1_12_R1.*;
 
-public enum StageableEntities {
+public enum StageableEntity {
 
 	// TODO: Add more version-specific entities
 
@@ -21,7 +21,7 @@ public enum StageableEntities {
 	 * @param entityClass of the type of entity to be scripted which extends {@link EntityInsentient} to allow for
 	 * scripting via NMS Pathfinder goals
 	 */
-	StageableEntities(Class<? extends EntityInsentient> entityClass) {
+	StageableEntity(Class<? extends EntityInsentient> entityClass) {
 		this.clazz = entityClass;
 	}
 

@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import uk.co.harieo.StagePlay.components.types.*;
 
-public enum DefinedComponents {
+public enum DefinedComponent {
 
 	TEXT("Text", "A simple line of text", "This is a line of text.", StringComponent.class),
 	DISTANCE("Distance", "An amount of blocks in a straight line", "5.5", DoubleComponent.class),
@@ -26,7 +26,7 @@ public enum DefinedComponents {
 	 * @param example of the component when it is used
 	 * @param componentClass which data type of handler is used for this component
 	 */
-	DefinedComponents(String simpleName, String description, String example,
+	DefinedComponent(String simpleName, String description, String example,
 			Class<? extends StageComponent> componentClass) {
 		this.name = simpleName;
 		this.description = description;
